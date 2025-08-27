@@ -6,3 +6,7 @@ obj
 .terraform
 *.tfstate*
 *.tfvars
+
+# Ignore SSH keys
+ssh-identity
+ssh-identity.pub
