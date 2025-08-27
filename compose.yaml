@@ -1,0 +1,11 @@
+name: oauth-composition
+
+services:
+  thought-service:
+    build:
+      context: src/services/thought-service
+      dockerfile: Dockerfile
+    ports:
+      - 8080:80
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
