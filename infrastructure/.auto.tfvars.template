@@ -1,0 +1,6 @@
+# Fill in your own Hetzner Cloud API token here
+# You can find it in the Hetzner Cloud console under "Security > API Tokens"
+hcloud_token = "FILL_ME!"
+# Fill in your own SSH key here or generate a new one with (ignoring custom comment and passphrase):
+# `ssh-keygen -t ed25519 -b 4096 -C "" -P "" -f ssh-identity`
+server_ssh_key = "FILL_ME!"

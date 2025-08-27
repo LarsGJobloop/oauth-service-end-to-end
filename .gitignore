@@ -1,3 +1,8 @@
 # Ignore .NET specific files
 bin
 obj
+
+# Ignore terraform specific files
+.terraform
+*.tfstate*
+*.tfvars
