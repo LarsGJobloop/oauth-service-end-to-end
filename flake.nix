@@ -1,5 +1,5 @@
 {
-  description = "Integration of OAuth2 with a SQLlite backed .NET Application";
+  description = "Minimal compose-based .NET service with GitHub OAuth Device Flow authentication and user-scoped SQLite data";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
