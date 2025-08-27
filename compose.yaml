@@ -1,11 +1,27 @@
 name: oauth-composition
 
 services:
+  reverse-proxy:
+    image: "traefik:v3.5"
+    command:
+      #- "--log.level=DEBUG"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entryPoints.web.address=:80"
+    ports:
+      - "80:80" # Expose default web address
+      - "8080:8080" # Expose Traefik Admin UI
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
   thought-service:
     build:
       context: src/services/thought-service
       dockerfile: Dockerfile
-    ports:
-      - 8080:80
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.thought-service.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.thought-service.entrypoints=web"
