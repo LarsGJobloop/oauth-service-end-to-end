@@ -8,7 +8,7 @@ resource "hcloud_ssh_key" "server_ssh_key" {
   public_key = var.server_ssh_key
 }
 
-module "thought-service" {
+module "demo_app" {
   source = "./hetzner-compose-app"
 
   # Repo to deploy
@@ -21,4 +21,9 @@ module "thought-service" {
 
   # SSH key to use for the server
   ssh_key_id = hcloud_ssh_key.server_ssh_key.id
+}
+
+output "app_address" {
+  description = "The address of the demo app"
+  value = module.demo_app.server_ip
 }
