@@ -127,9 +127,24 @@ docker compose up
       - Publish this repo to a public Git platform.
       - Update the repository URL in [./infrastructure/main.tf](/infrastructure/main.tf).
 
-   2. Set up Infrastructure as Code (IaC) credentials:
+   2. Prepare Infrastructure as Code (IaC) configuration:
+
+      - Copy the template file to create your own credentials file:
+        ```sh
+        cp infrastructure/.auto.tfvars.template infrastructure/.auto.tfvars
+        ```
+
+   3. Set up IaC credentials:
+
       - Obtain a Hetzner API token (requires a Hetzner account).
       - Add the token to [./infrastructure/.auto.tfvars](/infrastructure/.auto.tfvars).
+      - Add your SSH public key to the `server_ssh_key` field in [./infrastructure/.auto.tfvars](/infrastructure/.auto.tfvars). You can generate one with:
+
+        ```sh
+        ssh-keygen -t ed25519 -C "" -P "" -f ssh-identity
+        ```
+
+        Then copy the contents of `ssh-identity.pub` into the file.
 
 2. Apply the configuration
 
