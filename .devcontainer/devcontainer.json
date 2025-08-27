@@ -1,0 +1,10 @@
+{
+  // Keep nix devcontainer specific setup here
+  // Dependencies are managed explicitly in the nix flake.nix file and locked in the flake.lock file
+  "name": "nix-dev",
+  "image": "ghcr.io/xtruder/nix-devcontainer:latest",
+  // Keep the nix store in a volume to avoid re-building the nix store on every restart
+  "mounts": ["source=nix-store,target=/nix,type=volume"],
+  // Add devcontainer specific files to workspace gitignore
+  "postCreateCommand": "cat .devcontainer/.gitignore-extra >> .git/info/exclude"
+}
