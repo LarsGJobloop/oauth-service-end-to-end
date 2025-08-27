@@ -1,0 +1,73 @@
+#cloud-config
+
+# Upgrade on first boot
+package_update: true
+package_upgrade: true
+
+# Add baseline packages
+packages:
+  - git
+
+write_files:
+  # Setup the reconciliation service (systemd)
+  - path: /etc/systemd/system/reconcile.service
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=Run reconciliation script
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/bin/reconcile.sh
+
+  - path: /etc/systemd/system/reconcile.timer
+    permissions: '0644'
+    content: |
+      [Unit]
+      Description=Timer for reconciliation script
+
+      [Timer]
+      OnBootSec=${boot_delay}
+      OnUnitActiveSec=${reconciliation_intervall}
+      Persistent=true
+
+      [Install]
+      WantedBy=timers.target
+
+  - path: /usr/local/bin/reconcile.sh
+    permissions: '0755'
+    # Embedding scripts through templating is a bit hacky, but required for correct rendering.
+    content: |
+      ${indented_reconciliation_script}
+
+runcmd:
+  # Add Docker's official identity (GPG key)
+  - install -m 0755 -d /etc/apt/keyrings
+  - curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+  - chmod a+r /etc/apt/keyrings/docker.gpg
+
+  # Add Docker's official repository
+  - |
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+      https://download.docker.com/linux/debian \
+      $(lsb_release -cs) stable" \
+      > /etc/apt/sources.list.d/docker.list
+
+  # Update package index and install Docker components
+  - apt-get update
+  # - apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+  - apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+  # Ensure docker is running
+  - systemctl enable docker
+  - systemctl start docker
+
+  # Create GitOps repo dir
+  - mkdir -p /srv/gitops
+
+  # Setup the reconciliation service
+  - chmod +x /usr/local/bin/reconcile.sh
+  - systemctl daemon-reload
+  - systemctl enable reconcile.timer
+  - systemctl start reconcile.timer
